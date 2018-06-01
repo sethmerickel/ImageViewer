@@ -27,7 +27,7 @@ init:
 	@mkdir -p $(TARGETDIR)
 	@mkdir -p $(BUILDDIR)
 
-$(TARGET): $(BUILDDIR)/main.o $(BUILDDIR)/glad.o
+$(TARGET): $(BUILDDIR)/main.o $(BUILDDIR)/glad.o $(BUILDDIR)/Window.o
 	@echo "Linking..."	
 	$(CC) $(LIBS) $^ -o $@
 
@@ -38,6 +38,11 @@ $(BUILDDIR)/main.o: $(SRCDIR)/main.cpp
 $(BUILDDIR)/glad.o: $(SRCDIR)/glad.c
 	@echo "Building glad.o..."
 	$(CC) $(CFLAGS) -c $^ -o $@ $(INCDIRS) $(LIBS)
+
+$(BUILDDIR)/Window.o: $(SRCDIR)/Window.cpp
+	@echo "Building Window.o..."
+	$(CC) $(CFLAGS) -c $^ -o $@ $(INCDIRS) $(LIBS)
+
 
 clean:
 	@echo "Cleaning $(TARGET)...";
