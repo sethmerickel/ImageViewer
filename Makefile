@@ -27,7 +27,7 @@ init:
 	@mkdir -p $(TARGETDIR)
 	@mkdir -p $(BUILDDIR)
 
-$(TARGET): $(BUILDDIR)/main.o $(BUILDDIR)/glad.o $(BUILDDIR)/Window.o
+$(TARGET): $(BUILDDIR)/main.o $(BUILDDIR)/glad.o $(BUILDDIR)/Window.o $(BUILDDIR)/Shader.o
 	@echo "Linking..."	
 	$(CC) $(LIBS) $^ -o $@
 
@@ -42,6 +42,12 @@ $(BUILDDIR)/glad.o: $(SRCDIR)/glad.c
 $(BUILDDIR)/Window.o: $(SRCDIR)/Window.cpp
 	@echo "Building Window.o..."
 	$(CC) $(CFLAGS) -c $^ -o $@ $(INCDIRS) $(LIBS)
+
+
+$(BUILDDIR)/Shader.o: $(SRCDIR)/Shader.cpp
+	@echo "Building Shader.o..."
+	$(CC) $(CFLAGS) -c $^ -o $@ $(INCDIRS) $(LIBS)
+
 
 
 clean:
