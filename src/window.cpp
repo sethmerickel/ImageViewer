@@ -34,15 +34,7 @@ namespace
 
 //-----------------------------------------------------------------------------
 
-void Window::DestroyGLFWwindow::operator()(GLFWwindow* window)
-{
-   glfwDestroyWindow(window);
-}
-
-//-----------------------------------------------------------------------------
-
 Window::Window(int width, int height)
-   :mGLFWwindow()
 {
    if (!glfwInit()) 
       throw std::runtime_error("Failed to initialize glfw");
@@ -55,16 +47,16 @@ Window::Window(int width, int height)
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-   mGLFWwindow.reset(glfwCreateWindow(width, height, "Image Viewer", nullptr, nullptr));
-   glfwMakeContextCurrent(mGLFWwindow.get());
+   mGLFWwindow = glfwCreateWindow(width, height, "Image Viewer", nullptr, nullptr);
+   glfwMakeContextCurrent(mGLFWwindow);
    if (mGLFWwindow == nullptr) 
    {
       glfwTerminate();
       throw std::runtime_error("Failed to create GLFW window");
    }
 
-   glfwSetKeyCallback(mGLFWwindow.get(), glfwKeyCb);
-   glfwSetFramebufferSizeCallback(mGLFWwindow.get(), glfwFramebufferResizeCb);
+   glfwSetKeyCallback(mGLFWwindow, glfwKeyCb);
+   glfwSetFramebufferSizeCallback(mGLFWwindow, glfwFramebufferResizeCb);
 
    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
    {
@@ -85,7 +77,7 @@ Window::~Window()
 
 bool Window::drawing()
 {
-   return !glfwWindowShouldClose(mGLFWwindow.get());
+   return !glfwWindowShouldClose(mGLFWwindow);
 }
 
 //-----------------------------------------------------------------------------
@@ -96,7 +88,7 @@ void Window::draw()
 
    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
    glClear(GL_COLOR_BUFFER_BIT);
-   glfwSwapBuffers(mGLFWwindow.get());
+   glfwSwapBuffers(mGLFWwindow);
 }
 
 //-----------------------------------------------------------------------------

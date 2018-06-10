@@ -17,10 +17,5 @@ public:
 
 private:
 
-   struct DestroyGLFWwindow
-   {
-      void operator()(GLFWwindow* window);
-   };
-
-   std::unique_ptr<GLFWwindow, DestroyGLFWwindow> mGLFWwindow;
+   GLFWwindow* mGLFWwindow = nullptr; //owns this pointer. Don't delete!
 };
