@@ -5,29 +5,40 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+enum class ShaderType : char
+{
+   VERTEX = 0,
+   FRAGMENT,
+   GEOMETRY
+};
+
 class Shader
 {
 public:
+   Shader(ShaderType type);
+
+   // Move only
+   Shader(const Shader&) = delete;
+
+   // Move only
+   Shader& operator=(const Shader&) = delete;
+
+   Shader(Shader&& shader);
+
+   Shader& operator=(Shader&& shader);
    
-   enum TypeFlag : char
-   { 
-      VERT = 0,
-      FRAG = 1 << 0,
-      GEOM = 1 << 1
-   };
+   ~Shader();
 
-   Shader(
-      const std::string& vs_fname, 
-      const std::string& gs_fname,
-      const std::string& fs_fname);
+   void compile(const std::string& source);
 
-   void compile(TypeFlag flag);
+   GLuint getId() { return m_id; }
+   
+   ShaderType getShaderType() { return m_type; }
+
+   static std::string readFromFile(const std::string& fname);
 
 private:
-   std::string m_vs_str;
-   std::string m_gs_str;
-   std::string m_fs_str;
-   GLuint m_vs_id;
-   GLuint m_gs_id;
-   GLuint m_fs_id;
+   std::string m_source; 
+   GLuint m_id;
+   ShaderType m_type;
 };

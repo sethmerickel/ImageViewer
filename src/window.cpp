@@ -1,10 +1,13 @@
 #include "Window.h"
 
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include "Triangle.h"
 
 namespace
 {
@@ -29,6 +32,19 @@ namespace
    void glfwFramebufferResizeCb(GLFWwindow* window, int width, int height)
    {
       glViewport(0, 0, width, height);
+      std::stringstream msg;
+      msg << "Width: ";
+      msg << width;
+      msg << " Height: " << height;
+      std::cout << msg.str() << std::endl;
+   }
+
+   void processInput(GLFWwindow* window)
+   {
+      if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+      {
+         glfwSetWindowShouldClose(window, true);
+      }
    }
 }
 
@@ -47,23 +63,32 @@ Window::Window(int width, int height)
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-   mGLFWwindow = glfwCreateWindow(width, height, "Image Viewer", nullptr, nullptr);
-   glfwMakeContextCurrent(mGLFWwindow);
-   if (mGLFWwindow == nullptr) 
+   m_GLFWwindow = glfwCreateWindow(width, height, "Image Viewer", nullptr, nullptr);
+   if (m_GLFWwindow == nullptr) 
    {
       glfwTerminate();
       throw std::runtime_error("Failed to create GLFW window");
    }
 
-   glfwSetKeyCallback(mGLFWwindow, glfwKeyCb);
-   glfwSetFramebufferSizeCallback(mGLFWwindow, glfwFramebufferResizeCb);
+   glfwMakeContextCurrent(m_GLFWwindow);
+
+   glfwSetKeyCallback(m_GLFWwindow, glfwKeyCb);
+   glfwSetFramebufferSizeCallback(m_GLFWwindow, glfwFramebufferResizeCb);
 
    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
    {
       throw std::runtime_error("Failed to initialize OpenGL context");
    }
-
+  
+   // Width/height need to be doubled for glViewport.  Don't know why...
+   width *= 2;
+   height *= 2;
    glViewport(0, 0, width, height);
+   std::stringstream msg;
+   msg << "Width: ";
+   msg << width;
+   msg << " Height: " << height;
+   std::cout << msg.str() << std::endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -75,20 +100,42 @@ Window::~Window()
 
 //-----------------------------------------------------------------------------
 
+void Window::start()
+{
+   // Add some stuff to draw 
+   m_drawables.emplace_back(Triangle{});
+  
+   // Start drawing
+   while (drawing())
+   {
+      draw();
+   }
+}
+
+//-----------------------------------------------------------------------------
+
 bool Window::drawing()
 {
-   return !glfwWindowShouldClose(mGLFWwindow);
+   return !glfwWindowShouldClose(m_GLFWwindow);
 }
 
 //-----------------------------------------------------------------------------
 
 void Window::draw()
 {
-   glfwPollEvents();
+   processInput(m_GLFWwindow);
 
    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
    glClear(GL_COLOR_BUFFER_BIT);
-   glfwSwapBuffers(mGLFWwindow);
+
+   for (auto& drawable : m_drawables)
+   {
+      drawable.draw();
+   }
+
+   glfwSwapBuffers(m_GLFWwindow);
+
+   glfwWaitEvents();
 }
 
 //-----------------------------------------------------------------------------

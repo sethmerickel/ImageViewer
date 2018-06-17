@@ -27,7 +27,7 @@ init:
 	@mkdir -p $(TARGETDIR)
 	@mkdir -p $(BUILDDIR)
 
-$(TARGET): $(BUILDDIR)/main.o $(BUILDDIR)/glad.o $(BUILDDIR)/Window.o $(BUILDDIR)/Shader.o
+$(TARGET): $(BUILDDIR)/main.o $(BUILDDIR)/glad.o $(BUILDDIR)/Window.o $(BUILDDIR)/Shader.o $(BUILDDIR)/ShaderProgram.o $(BUILDDIR)/Triangle.o
 	@echo "Linking..."	
 	$(CC) $(LIBS) $^ -o $@
 
@@ -43,17 +43,22 @@ $(BUILDDIR)/Window.o: $(SRCDIR)/Window.cpp
 	@echo "Building Window.o..."
 	$(CC) $(CFLAGS) -c $^ -o $@ $(INCDIRS) $(LIBS)
 
-
 $(BUILDDIR)/Shader.o: $(SRCDIR)/Shader.cpp
 	@echo "Building Shader.o..."
 	$(CC) $(CFLAGS) -c $^ -o $@ $(INCDIRS) $(LIBS)
 
+$(BUILDDIR)/ShaderProgram.o: $(SRCDIR)/ShaderProgram.cpp
+	@echo "Building ShaderProgram.o..."
+	$(CC) $(CFLAGS) -c $^ -o $@ $(INCDIRS) $(LIBS)
+
+$(BUILDDIR)/Triangle.o: $(SRCDIR)/Triangle.cpp
+	@echo "Building Triangle.o..."
+	$(CC) $(CFLAGS) -c $^ -o $@ $(INCDIRS) $(LIBS)
 
 
 clean:
 	@echo "Cleaning $(TARGET)...";
 	$(RM) -r $(BUILDDIR) $(TARGETDIR)
-
 
 # Tests
 

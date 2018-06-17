@@ -1,21 +1,24 @@
 #pragma once
 
-#include <memory>
-
+#include <vector>
+#include "Drawable.hpp"
 
 class GLFWwindow;
-
 
 class Window
 {
 public:
    Window(int width, int height);
    ~Window();
+   void start();
    bool drawing();
-   void draw();
+   void draw(); 
    void terminate();
 
-private:
+   template <typename DrawableT>
+   void addDrawable(const DrawableT& drawable); 
 
-   GLFWwindow* mGLFWwindow = nullptr; //owns this pointer. Don't delete!
+private:
+   GLFWwindow* m_GLFWwindow = nullptr; //owns this pointer. Don't delete!
+   std::vector<Drawable> m_drawables;
 };

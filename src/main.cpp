@@ -7,11 +7,8 @@ int main()
    try
    {
       Window window(640, 480);
-
-      while (window.drawing())
-      {
-         window.draw();
-      }
+      //Window window(200, 200);
+      window.start(); 
    }
    catch (std::exception& e)
    {
