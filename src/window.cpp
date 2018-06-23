@@ -32,11 +32,6 @@ namespace
    void glfwFramebufferResizeCb(GLFWwindow* window, int width, int height)
    {
       glViewport(0, 0, width, height);
-      std::stringstream msg;
-      msg << "Width: ";
-      msg << width;
-      msg << " Height: " << height;
-      std::cout << msg.str() << std::endl;
    }
 
    void processInput(GLFWwindow* window)
@@ -84,11 +79,6 @@ Window::Window(int width, int height)
    width *= 2;
    height *= 2;
    glViewport(0, 0, width, height);
-   std::stringstream msg;
-   msg << "Width: ";
-   msg << width;
-   msg << " Height: " << height;
-   std::cout << msg.str() << std::endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -125,7 +115,7 @@ void Window::draw()
 {
    processInput(m_GLFWwindow);
 
-   glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
    glClear(GL_COLOR_BUFFER_BIT);
 
    for (auto& drawable : m_drawables)

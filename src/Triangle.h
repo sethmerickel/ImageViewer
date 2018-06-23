@@ -14,5 +14,6 @@ public:
 private:
   GLuint m_vbo_id;
   GLuint m_vao_id;
+  GLuint m_ebo_id;
   ShaderProgram m_sp;
 };
