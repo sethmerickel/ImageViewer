@@ -3,6 +3,7 @@ CC := clang++ # This is the main compiler
 
 # Folders
 SRCDIR := src
+OBJDIR := obj
 BUILDDIR := build
 TARGETDIR := bin
 INCDIRS := -Iinclude
@@ -12,54 +13,39 @@ EXECUTABLE := imageviewer
 TARGET := $(TARGETDIR)/$(EXECUTABLE)
 
 #Define sources and objects
-SOURCES := $(shell find $(SRCDIR) -name '*.cpp')
-OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.cpp=.o))
+SRCS := $(wildcard src/*.cpp) 
+OBJS := $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SRCS:.cpp=.o))
 
 # Flags
 #CFLAGS := -std=c++17 -stdlib=libc++ -O2
 CFLAGS := -std=c++17 -w -O2 
 LIBDIRS := 
-LIBS := -lglfw -ldl
+LDFLAGS := -lglfw -ldl
 
 all: init $(TARGET)
 
 init:
 	@mkdir -p $(TARGETDIR)
 	@mkdir -p $(BUILDDIR)
+	@mkdir -p $(OBJDIR)
 
-$(TARGET): $(BUILDDIR)/main.o $(BUILDDIR)/glad.o $(BUILDDIR)/Window.o $(BUILDDIR)/Shader.o $(BUILDDIR)/ShaderProgram.o $(BUILDDIR)/Triangle.o
-	@echo "Linking..."	
-	$(CC) $(LIBS) $^ -o $@
+$(TARGET): $(OBJS)
+	@echo "Linking..."
+	$(CC) -o $@ $^ $(LDFLAGS)
 
-$(BUILDDIR)/main.o: $(SRCDIR)/main.cpp
-	@echo "Building main.o..."
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+	@echo "Compiling..."
 	$(CC) $(CFLAGS) -c $^ -o $@ $(INCDIRS)
-
-$(BUILDDIR)/glad.o: $(SRCDIR)/glad.c
-	@echo "Building glad.o..."
-	$(CC) $(CFLAGS) -c $^ -o $@ $(INCDIRS) $(LIBS)
-
-$(BUILDDIR)/Window.o: $(SRCDIR)/Window.cpp
-	@echo "Building Window.o..."
-	$(CC) $(CFLAGS) -c $^ -o $@ $(INCDIRS) $(LIBS)
-
-$(BUILDDIR)/Shader.o: $(SRCDIR)/Shader.cpp
-	@echo "Building Shader.o..."
-	$(CC) $(CFLAGS) -c $^ -o $@ $(INCDIRS) $(LIBS)
-
-$(BUILDDIR)/ShaderProgram.o: $(SRCDIR)/ShaderProgram.cpp
-	@echo "Building ShaderProgram.o..."
-	$(CC) $(CFLAGS) -c $^ -o $@ $(INCDIRS) $(LIBS)
-
-$(BUILDDIR)/Triangle.o: $(SRCDIR)/Triangle.cpp
-	@echo "Building Triangle.o..."
-	$(CC) $(CFLAGS) -c $^ -o $@ $(INCDIRS) $(LIBS)
-
 
 clean:
 	@echo "Cleaning $(TARGET)...";
-	$(RM) -r $(BUILDDIR) $(TARGETDIR)
+	$(RM) -r $(BUILDDIR) $(TARGETDIR) $(OBJDIR)
+
+debug:
+	@echo $(SRCS)
+	@echo $(OBJS)
 
 # Tests
 
 .PHONY: clean
+.PHONY: debug
