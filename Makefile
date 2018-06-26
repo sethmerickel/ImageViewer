@@ -4,7 +4,6 @@ CC := clang++ # This is the main compiler
 # Folders
 SRCDIR := src
 OBJDIR := obj
-BUILDDIR := build
 TARGETDIR := bin
 INCDIRS := -Iinclude
 
