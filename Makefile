@@ -25,7 +25,6 @@ all: init $(TARGET)
 
 init:
 	@mkdir -p $(TARGETDIR)
-	@mkdir -p $(BUILDDIR)
 	@mkdir -p $(OBJDIR)
 
 $(TARGET): $(OBJS)

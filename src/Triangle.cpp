@@ -8,13 +8,14 @@
 
 Triangle::Triangle()
 {
-   std::string vs_source = 
-      "#version 410 core\n"
-      "layout (location = 0) in vec3 aPos;\n"
-      "void main()\n"
-      "{\n"
-      "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-      "}\n";
+   std::string vs_source = R"glsl( 
+      #version 410 core
+      layout (location = 0) in vec3 aPos;
+      void main()
+      {
+         gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+      })glsl";
+
 
    //std::cout << "VERTEX SOURCE: " << std::endl;
    //std::cout << vs_source << std::endl;
@@ -23,13 +24,13 @@ Triangle::Triangle()
    vs.compile(vs_source);
    m_sp.attachShader(vs.getId());
 
-   std::string fs_source = 
-      "#version 410 core\n"
-      "out vec4 FragColor;\n"
-      "void main()\n"
-      "{\n"
-      "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-      "}\n";
+   std::string fs_source = R"glsl(
+      #version 410 core
+      out vec4 FragColor;
+      void main()
+      {
+         FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+      })glsl";
 
    //std::cout << "FRAGMENT SOURCE: " << std::endl;
    //std::cout << vs_source << std::endl;
@@ -67,7 +68,6 @@ Triangle::Triangle()
    // Set up index data
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo_id);
    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
-
 
    // Set up VAO
    glBindVertexArray(m_vao_id);
