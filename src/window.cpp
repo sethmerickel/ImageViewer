@@ -7,6 +7,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "Layer.h"
 #include "Triangle.h"
 
 namespace
@@ -20,11 +21,19 @@ namespace
 
    //--------------------------------------------------------------------------
    
-   void glfwKeyCb(GLFWwindow* window, int key, int scancode, int action, int mode)
+   void glfwKeyCb(GLFWwindow* glfw_window, int key, int scancode, int action, int mode)
    {
-       std::cout << key << std::endl;
-       if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-           glfwSetWindowShouldClose(window, GL_TRUE);
+      Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+      std::cout << window << std::endl;
+
+      if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+      {
+         glfwSetWindowShouldClose(glfw_window, GL_TRUE);
+      }
+      else if (key == GLFW_KEY_R && action == GLFW_PRESS)
+      {
+         window->updateDrawables();
+      }
    }
 
    //--------------------------------------------------------------------------
@@ -58,17 +67,18 @@ Window::Window(int width, int height)
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-   m_GLFWwindow = glfwCreateWindow(width, height, "Image Viewer", nullptr, nullptr);
-   if (m_GLFWwindow == nullptr) 
+   m_glfw_window = glfwCreateWindow(width, height, "Image Viewer", nullptr, nullptr);
+   if (m_glfw_window == nullptr) 
    {
       glfwTerminate();
       throw std::runtime_error("Failed to create GLFW window");
    }
 
-   glfwMakeContextCurrent(m_GLFWwindow);
+   glfwMakeContextCurrent(m_glfw_window);
 
-   glfwSetKeyCallback(m_GLFWwindow, glfwKeyCb);
-   glfwSetFramebufferSizeCallback(m_GLFWwindow, glfwFramebufferResizeCb);
+   glfwSetWindowUserPointer(m_glfw_window, this);
+   glfwSetKeyCallback(m_glfw_window, glfwKeyCb);
+   glfwSetFramebufferSizeCallback(m_glfw_window, glfwFramebufferResizeCb);
 
    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
    {
@@ -90,10 +100,14 @@ Window::~Window()
 
 //-----------------------------------------------------------------------------
 
-void Window::start()
+void 
+Window::start()
 {
    // Add some stuff to draw 
-   m_drawables.emplace_back(Triangle{});
+   m_drawables.emplace_back(
+      Layer{
+         ShaderProgram{"src/Shaders/shader.vs", "", "src/Shaders/shader.fs"},
+         Triangle{}});
   
    // Start drawing
    while (drawing())
@@ -104,16 +118,18 @@ void Window::start()
 
 //-----------------------------------------------------------------------------
 
-bool Window::drawing()
+bool 
+Window::drawing()
 {
-   return !glfwWindowShouldClose(m_GLFWwindow);
+   return !glfwWindowShouldClose(m_glfw_window);
 }
 
 //-----------------------------------------------------------------------------
 
-void Window::draw()
+void 
+Window::draw()
 {
-   processInput(m_GLFWwindow);
+   //processInput(m_glfw_window);
 
    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
    glClear(GL_COLOR_BUFFER_BIT);
@@ -123,11 +139,21 @@ void Window::draw()
       drawable.draw();
    }
 
-   glfwSwapBuffers(m_GLFWwindow);
+   glfwSwapBuffers(m_glfw_window);
 
-   glfwWaitEvents();
+   //glfwWaitEvents();
+   glfwPollEvents();
 }
 
 //-----------------------------------------------------------------------------
 
+void
+Window::updateDrawables()
+{
+   for(auto& drawable : m_drawables)
+   {
+      drawable.update();
+   }
+}
 
+//-----------------------------------------------------------------------------

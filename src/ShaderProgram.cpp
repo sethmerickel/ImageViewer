@@ -1,13 +1,23 @@
 #include <stdexcept>
+#include <sstream>
+#include <string>
 
 #include "ShaderProgram.h"
 
+#include "Shader.h"
+
 //-----------------------------------------------------------------------------
 
-ShaderProgram::ShaderProgram()
-   :m_id(glCreateProgram())
+ShaderProgram::ShaderProgram(
+   const std::string& vs_fname,
+   const std::string& gs_fname,
+   const std::string& fs_fname)
+   :m_id(glCreateProgram()),
+    m_vs_fname(vs_fname),
+    m_gs_fname(gs_fname),
+    m_fs_fname(fs_fname)
 {
-
+   compileAndLink();
 }
    
 //-----------------------------------------------------------------------------
@@ -19,40 +29,38 @@ ShaderProgram::~ShaderProgram()
 
 //-----------------------------------------------------------------------------
 
-ShaderProgram::ShaderProgram(ShaderProgram&& shader_program)
-   :m_id(shader_program.m_id)
+ShaderProgram::ShaderProgram(ShaderProgram&& sp)
+   :m_id(sp.m_id),
+    m_vs_fname(sp.m_vs_fname),
+    m_gs_fname(sp.m_gs_fname),
+    m_fs_fname(sp.m_fs_fname)
 {
-   shader_program.m_id = 0;   
+   sp.m_id = 0;   
 }
 
 //-----------------------------------------------------------------------------
 
-void ShaderProgram::attachShader(GLuint shader_id)
+ShaderProgram& ShaderProgram::operator=(ShaderProgram&& rhs)
+{
+   m_vs_fname = rhs.m_vs_fname;
+   m_gs_fname = rhs.m_gs_fname;
+   m_fs_fname = rhs.m_fs_fname;
+   std::swap(m_id, rhs.m_id); 
+   return *this;
+}
+
+//-----------------------------------------------------------------------------
+
+void
+ShaderProgram::attachShader(GLuint shader_id)
 {
    glAttachShader(m_id, shader_id);
 }
 
 //-----------------------------------------------------------------------------
 
-//void ShaderProgram::detachShader(ShaderType shader_type)
-//{
-//   if (shader_type == ShaderType::VERTEX)
-//   {
-//      glDetachShader(m_id, m_vs.getId());
-//   }
-//   else if (shader_type == ShaderType::GEOMETRY)
-//   {
-//      glDetachShader(m_id, m_gs.getId());
-//   }
-//   else if (shader_type == ShaderType::FRAGMENT)
-//   {
-//      glDetachShader(m_id, m_fs.getId());
-//   }
-//}
-
-//-----------------------------------------------------------------------------
-
-void ShaderProgram::link()
+void 
+ShaderProgram::link()
 {
    glLinkProgram(m_id);
 
@@ -68,17 +76,61 @@ void ShaderProgram::link()
    }
 }
 
+
+void 
+ShaderProgram::compileAndLink()
+{
+   bool link_ok = false;
+   if (m_vs_fname.empty() == false)
+   {
+      Shader shader(ShaderType::VERTEX, m_vs_fname);
+      this->attachShader(shader.getId());
+      link_ok = true;
+   }
+
+   if (m_gs_fname.empty() == false)
+   {
+      Shader shader(ShaderType::GEOMETRY, m_gs_fname);
+      this->attachShader(shader.getId());
+      link_ok = true;
+   }
+
+   if (m_fs_fname.empty() == false)
+   {
+      Shader shader(ShaderType::FRAGMENT, m_fs_fname);
+      this->attachShader(shader.getId());
+      link_ok = true;
+   }
+
+   if (link_ok == false)
+   {
+      std::stringstream msg;
+      msg << "Can't construct ShaderProgram. \n";
+      msg << "m_vs_fname: " << m_vs_fname << std::endl;
+      msg << "m_gs_fname: " << m_gs_fname << std::endl;
+      msg << "m_fs_fname: " << m_fs_fname << std::endl;
+      throw std::runtime_error{msg.str()};
+   }
+
+   // Link the program
+   link();
+}
+
 //-----------------------------------------------------------------------------
 
-void ShaderProgram::use()
+void 
+ShaderProgram::use()
 {
    glUseProgram(m_id);
 }
 
 //-----------------------------------------------------------------------------
 
-void ShaderProgram::disable()
+void 
+ShaderProgram::unUse()
 {
-
+   glUseProgram(0);
 }
+
+//-----------------------------------------------------------------------------
 

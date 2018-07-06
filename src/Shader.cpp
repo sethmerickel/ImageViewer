@@ -22,6 +22,18 @@ Shader::Shader(ShaderType type)
 
 //-----------------------------------------------------------------------------
 
+Shader::Shader(ShaderType type, const std::string& fname)
+   :Shader(type)
+{
+   if (fname.empty() == true)
+      throw std::runtime_error("Empty path to shader file");
+
+   std::string source = Shader::readFromFile(fname);
+   compile(source);
+}
+
+//-----------------------------------------------------------------------------
+
 Shader::~Shader()
 {
    glDeleteShader(m_id);

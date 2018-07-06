@@ -16,6 +16,8 @@ class Shader
 {
 public:
    Shader(ShaderType type);
+   
+   Shader(ShaderType type, const std::string& fname);
 
    // Move only
    Shader(const Shader&) = delete;

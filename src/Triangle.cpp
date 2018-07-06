@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 #include <string>
 
@@ -8,47 +9,12 @@
 
 Triangle::Triangle()
 {
-   std::string vs_source = R"glsl( 
-      #version 410 core
-      layout (location = 0) in vec3 aPos;
-      void main()
-      {
-         gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-      })glsl";
-
-
-   //std::cout << "VERTEX SOURCE: " << std::endl;
-   //std::cout << vs_source << std::endl;
-
-   Shader vs(ShaderType::VERTEX);
-   vs.compile(vs_source);
-   m_sp.attachShader(vs.getId());
-
-   std::string fs_source = R"glsl(
-      #version 410 core
-      out vec4 FragColor;
-      void main()
-      {
-         FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-      })glsl";
-
-   //std::cout << "FRAGMENT SOURCE: " << std::endl;
-   //std::cout << vs_source << std::endl;
-
-   Shader fs(ShaderType::FRAGMENT);
-   fs.compile(fs_source);
-   m_sp.attachShader(fs.getId());
-   
-   // Link shaders into a shader program
-   m_sp.link();
-
-   
    // Triangle vertices
    GLfloat vertices[] = {
-      -0.5f,  0.5f, 0.0f, // Top Left 
-      -0.5f, -0.5f, 0.0f, // Bottom Left 
-       0.5f, -0.5f, 0.0f, // Bottom Right
-       0.5f,  0.5f, 0.0f  // Top Right
+      -0.7f,  0.7f, 0.0f, // Top Left 
+      -0.7f, -0.7f, 0.0f, // Bottom Left 
+       0.7f, -0.7f, 0.0f, // Bottom Right
+       0.7f,  0.7f, 0.0f  // Top Right
    };
 
    GLuint indices[] = {
@@ -90,11 +56,18 @@ Triangle::Triangle()
 
 void draw(Triangle& triangle)
 {
-   triangle.m_sp.use();
    glBindVertexArray(triangle.m_vao_id);
-   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
    glBindVertexArray(0);
+}
+
+//-----------------------------------------------------------------------------
+
+void 
+update(Triangle& triangle)
+{
+   // Nothing to update 
 }
 
 //-----------------------------------------------------------------------------

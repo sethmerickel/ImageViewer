@@ -8,7 +8,8 @@
 
 struct Storage
 {
-   virtual void docall() = 0;
+   virtual void doDraw() = 0;
+   virtual void doUpdate() = 0;
 };
 
 template <typename T>
@@ -17,8 +18,14 @@ struct StorageImpl : Storage
    StorageImpl(T t) : m_t{ std::move(t) }
    {}
 
-   void docall() override {
+   void doDraw() override 
+   {
       draw(m_t);
+   }
+
+   void doUpdate() override 
+   {
+      update(m_t);
    }
 
    T m_t;
@@ -35,9 +42,13 @@ public:
       : m_storage{ std::make_unique<StorageImpl<T>>(std::move(t)) }
    {}
 
-   void draw() { m_storage->docall(); }
+   void draw() { m_storage->doDraw(); }
 
-   friend void draw(const Drawable& d) { d.m_storage->docall(); }
+   void update() { m_storage->doUpdate(); }
+
+   friend void draw(const Drawable& d) { d.m_storage->doDraw(); }
+   
+   friend void update(const Drawable& d) { d.m_storage->doUpdate(); }
 
 private:
    std::unique_ptr<Storage> m_storage;

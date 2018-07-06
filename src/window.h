@@ -14,11 +14,9 @@ public:
    bool drawing();
    void draw(); 
    void terminate();
-
-   template <typename DrawableT>
-   void addDrawable(const DrawableT& drawable); 
+   void updateDrawables();
 
 private:
-   GLFWwindow* m_GLFWwindow = nullptr; //owns this pointer. Don't delete!
+   GLFWwindow* m_glfw_window = nullptr; //owns this pointer. Don't delete!
    std::vector<Drawable> m_drawables;
 };
