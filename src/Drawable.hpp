@@ -1,14 +1,19 @@
 #pragma once
+// Type erased class for drawable type, types to be rendered to the view. To make a 
+// type drawable implement 2 free functions (possibly friends)
+//    1) void draw(<your type>&)  
+//    2) void update(<your type>&)
 
-// Type erased class for types that have an overloade draw(type t) function
 
 #include <memory>
+
+#include "ShaderProgram.h"
 
 // Implementation classes
 
 struct Storage
 {
-   virtual void doDraw() = 0;
+   virtual void doDraw(ShaderProgram& sp) = 0;
    virtual void doUpdate() = 0;
 };
 
@@ -18,9 +23,9 @@ struct StorageImpl : Storage
    StorageImpl(T t) : m_t{ std::move(t) }
    {}
 
-   void doDraw() override 
+   void doDraw(ShaderProgram& sp) override 
    {
-      draw(m_t);
+      draw(m_t, sp);
    }
 
    void doUpdate() override 
@@ -42,13 +47,25 @@ public:
       : m_storage{ std::make_unique<StorageImpl<T>>(std::move(t)) }
    {}
 
-   void draw() { m_storage->doDraw(); }
+   void 
+   draw(ShaderProgram& sp)
+   {
+      m_storage->doDraw(sp); 
+   }
 
    void update() { m_storage->doUpdate(); }
 
-   friend void draw(const Drawable& d) { d.m_storage->doDraw(); }
+   friend void 
+   draw(const Drawable& d, ShaderProgram& sp) 
+   {
+      d.m_storage->doDraw(sp);
+   }
    
-   friend void update(const Drawable& d) { d.m_storage->doUpdate(); }
+   friend void
+   update(const Drawable& d)
+   {
+      d.m_storage->doUpdate(); 
+   }
 
 private:
    std::unique_ptr<Storage> m_storage;

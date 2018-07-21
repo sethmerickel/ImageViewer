@@ -1,9 +1,10 @@
 #pragma once
 
+#include <memory>
 #include <vector>
-#include "Drawable.hpp"
 
 class GLFWwindow;
+class Layer;
 
 class Window
 {
@@ -18,5 +19,5 @@ public:
 
 private:
    GLFWwindow* m_glfw_window = nullptr; //owns this pointer. Don't delete!
-   std::vector<Drawable> m_drawables;
+   std::vector<std::unique_ptr<Layer>> m_layers;
 };

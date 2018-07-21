@@ -27,8 +27,6 @@ public:
    // Non copyable
    ShaderProgram& operator=(const ShaderProgram&) = delete;
 
-   void compileAndLink();
-
    void use();
 
    void unUse();
@@ -36,11 +34,12 @@ public:
    GLuint getId() { return m_id; }
 
    std::string getVsFname() const { return m_vs_fname; }
-   std::string getGsFname() const { return m_gs_fname; };
-   std::string getFsFname() const { return m_fs_fname; };
+   std::string getGsFname() const { return m_gs_fname; }
+   std::string getFsFname() const { return m_fs_fname; }
 
 private:
    
+   void compileAndLink();
    void attachShader(GLuint shader_id);
    void link();
 

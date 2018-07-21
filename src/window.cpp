@@ -7,7 +7,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "Layer.h"
+#include "LayerImpl.h"
 #include "Triangle.h"
 
 namespace
@@ -23,15 +23,13 @@ namespace
    
    void glfwKeyCb(GLFWwindow* glfw_window, int key, int scancode, int action, int mode)
    {
-      Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
-      std::cout << window << std::endl;
-
       if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
       {
          glfwSetWindowShouldClose(glfw_window, GL_TRUE);
       }
       else if (key == GLFW_KEY_R && action == GLFW_PRESS)
       {
+         Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
          window->updateDrawables();
       }
    }
@@ -104,10 +102,10 @@ void
 Window::start()
 {
    // Add some stuff to draw 
-   m_drawables.emplace_back(
-      Layer{
-         ShaderProgram{"src/Shaders/shader.vs", "", "src/Shaders/shader.fs"},
-         Triangle{}});
+   m_layers.emplace_back(
+         new LayerImpl{
+            ShaderProgram{"src/Shaders/shader.vs", "", "src/Shaders/shader.fs"},
+            Triangle{}});
   
    // Start drawing
    while (drawing())
@@ -134,9 +132,9 @@ Window::draw()
    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
    glClear(GL_COLOR_BUFFER_BIT);
 
-   for (auto& drawable : m_drawables)
+   for (auto& layer : m_layers)
    {
-      drawable.draw();
+      layer->draw();
    }
 
    glfwSwapBuffers(m_glfw_window);
@@ -150,9 +148,9 @@ Window::draw()
 void
 Window::updateDrawables()
 {
-   for(auto& drawable : m_drawables)
+   for(auto& layer : m_layers)
    {
-      drawable.update();
+      layer->reload();
    }
 }
 

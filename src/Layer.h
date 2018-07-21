@@ -1,22 +1,19 @@
 #pragma once
 
-#include "Drawable.hpp"
-#include "ShaderProgram.h"
+class ShaderProgram;
 
 class Layer
 {
 public:
-   Layer(ShaderProgram&& sp, Drawable&& drawable);
+   Layer() = default;
+   virtual ~Layer() = 0;
+   virtual void draw() = 0;
+   virtual void reload() = 0;
 
-   void setShaderProgram(ShaderProgram&& sp);
-
-   friend void draw(Layer& layer);
-   
-   friend void update(Layer& layer);
 
 private:
-   ShaderProgram m_sp;
-   Drawable m_drawable;
+   // Not copyable
+   Layer(const Layer& layer) = delete;
+   Layer& operator=(const Layer& layer) = delete;
 };
-
 
