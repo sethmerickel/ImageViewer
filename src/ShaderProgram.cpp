@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdexcept>
 #include <sstream>
 #include <string>
@@ -134,3 +135,18 @@ ShaderProgram::unUse()
 
 //-----------------------------------------------------------------------------
 
+GLint 
+ShaderProgram::attrib(const GLchar* name) const
+{
+   GLint attrib = glGetAttribLocation(m_id, name);
+   if (attrib == -1)
+   {
+      std::string msg = "Attribute not found: ";
+      msg += name;
+      throw std::runtime_error(msg);
+   }
+
+   return attrib;
+}
+
+//-----------------------------------------------------------------------------

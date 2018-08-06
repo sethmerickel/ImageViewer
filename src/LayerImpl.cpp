@@ -23,7 +23,7 @@ LayerImpl::reload()
 void
 LayerImpl::draw()
 {
-   m_sp.use();
+   //m_sp.use();
    //GLfloat t = glfwGetTime();
    //GLfloat grn = (std::sin(t) / 2.0) + 0.5;
    //GLint color_loc = glGetUniformLocation(layer.m_sp.getId(), "color");
@@ -36,7 +36,7 @@ LayerImpl::draw()
 
    //
    m_drawable.draw(m_sp);
-   m_sp.unUse(); 
+   //m_sp.unUse(); 
 
 }
 

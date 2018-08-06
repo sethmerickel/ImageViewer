@@ -1,14 +1,16 @@
-#version 410 core
-in vec3 out_color;
-in vec2 tex_coord;
+#version 150
 
-out vec4 frag_color;
+uniform sampler2D tex;
 
-uniform sampler2D our_texture;
+in vec2 fragTexCoord;
 
-void main()
+out vec4 finalColor;
+
+void main() 
 {
-   frag_color = texture(our_texture, tex_coord);
-}
-
-
+    //vec2 size = textureSize(tex, 0);
+    //finalColor = vec4(size.y, 0, 0, 1);
+    finalColor = texture(tex, fragTexCoord);
+    //finalColor = vec4(fragTexCoord, 0.0, 1.0);
+    //finalColor = vec4(1.0, 0.0, 0.0, 1.0);
+} 

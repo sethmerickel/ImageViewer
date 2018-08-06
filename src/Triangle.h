@@ -10,7 +10,10 @@ class ShaderProgram;
 class Triangle
 {
 public:
-   Triangle();
+   Triangle(const ShaderProgram& sp);
+   Triangle(Triangle&& tri);
+   Triangle& operator=(Triangle&& rhs);
+
    friend void draw(Triangle& triangle, ShaderProgram& sp);
    friend void update(Triangle& triangle);
 

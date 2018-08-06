@@ -1,16 +1,13 @@
-#version 410 core
-layout (location = 0) in vec3 vertex_coord;
-layout (location = 1) in vec3 vertex_color;
-layout (location = 2) in vec2 texture_coord;
+#version 150
 
-out vec3 out_color;
-out vec2 tex_coord;
+in vec3 vert;
+in vec2 vertTexCoord;
 
-void main()
-{
-   gl_Position = vec4(vertex_coord, 1.0);
-   out_color = vertex_color;
-   tex_coord = texture_coord;
+out vec2 fragTexCoord;
+
+void main() {
+    // Pass the tex coord straight through to the fragment shader
+    fragTexCoord = vertTexCoord;
+    
+    gl_Position = vec4(vert, 1);
 }
-
-

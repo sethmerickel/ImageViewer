@@ -102,10 +102,12 @@ void
 Window::start()
 {
    // Add some stuff to draw 
+   ShaderProgram sp{"src/Shaders/shader.vs", "", "src/Shaders/shader.fs"};
+   Triangle triangle{sp};
+
    m_layers.emplace_back(
-         new LayerImpl{
-            ShaderProgram{"src/Shaders/shader.vs", "", "src/Shaders/shader.fs"},
-            Triangle{}});
+         new LayerImpl{std::move(sp), std::move(triangle)});
+            
   
    // Start drawing
    while (drawing())
@@ -129,8 +131,8 @@ Window::draw()
 {
    //processInput(m_glfw_window);
 
-   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-   glClear(GL_COLOR_BUFFER_BIT);
+   //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+   //glClear(GL_COLOR_BUFFER_BIT);
 
    for (auto& layer : m_layers)
    {

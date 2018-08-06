@@ -5,6 +5,10 @@
 #include <stdexcept>
 #include <sstream>
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+
 #include "stb/stb_image.h"
 
 //-----------------------------------------------------------------------------
@@ -15,53 +19,88 @@ Texture::Texture(const std::string& fname)
    m_channels(0)
 {
    // Read texture from disk
-   ///glGenTextures(1, &m_id);
-   //unsigned char* data = stbi_load(fname.c_str(), &m_width, &m_height, &m_channels, 0);
+   auto data = stbi_load(fname.c_str(), &m_width, &m_height, &m_channels, 0);
 
-   std::array<unsigned char, 3*4*4> data{};
-   std::fill(begin(data), end(data), '1');
-   data.back() = '\n';
-   std::cout << data.data() << std::endl;
-   
-   m_width = 4;
-   m_height = 4;
-   m_channels = 3;
+   //GLubyte data[] = { 0xff, 0x09, 0x00, 0xff,
+   //                   0xff, 0xff, 0x00, 0xff,
+   //                   0x00, 0xff, 0x00, 0xff, 
+   //                   0xff, 0x00, 0xff, 0xff };
+       
+   //m_width = 2;
+   //m_height = 2;
+   //m_channels = 4;
    std::cout << "Width: " << m_width << std::endl;
    std::cout << "Height: " << m_height << std::endl;
    std::cout << "Channels: " << m_channels << std::endl;
 
-   if (data.data() == nullptr)
+   if (data == nullptr)
    {
-      std::stringstream msg{"Failed to read texture: "};
+      std::stringstream msg;
+      msg << "Failed to read texture: ";
       msg << fname;
       throw std::runtime_error(msg.str());
    }
 
    // Load texture to graphics card
-   glActiveTexture(GL_TEXTURE0);
    glGenTextures(1, &m_id);
    bind();
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
    glTexImage2D(
          GL_TEXTURE_2D,
-         0,
+         0, 
          GL_RGB,
-         m_width, 
+         m_width,
          m_height,
          0,
          GL_RGB,
          GL_UNSIGNED_BYTE,
-         data.data());
+         data);
+
+   unBind();
+
 
    // Free memory
-   //std::puts("Freeing Memory");
-   //stbi_image_free(data);
-   //std::puts("Freed Memory");
-   
-   // Set texture wrapping
-   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+   stbi_image_free(data);
+}
+
+//-----------------------------------------------------------------------------
+
+Texture::Texture(Texture&& rhs)
+  :m_id(rhs.m_id),
+   m_width(rhs.m_width),
+   m_height(rhs.m_height),
+   m_channels(rhs.m_channels)
+{
+   m_id = rhs.m_id;
+   rhs.m_id = 0;
+}
+
+//-----------------------------------------------------------------------------
+
+Texture& Texture::operator=(Texture&& rhs)
+{
+   m_width = rhs.m_width;
+   m_height = rhs.m_height;
+   m_channels = rhs.m_channels;
+   m_id = rhs.m_id;
+   rhs.m_id = 0;
+}
+
+//-----------------------------------------------------------------------------
+
+Texture::~Texture()
+{
+   glDeleteTextures(1, &m_id);
 }
    
+//-----------------------------------------------------------------------------
+
+GLuint Texture::getId() const 
+{
+   return m_id;
+}
+
 //-----------------------------------------------------------------------------
 
 void

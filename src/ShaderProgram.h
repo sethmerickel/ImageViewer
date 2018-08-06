@@ -37,6 +37,8 @@ public:
    std::string getGsFname() const { return m_gs_fname; }
    std::string getFsFname() const { return m_fs_fname; }
 
+   GLint attrib(const GLchar* name) const;
+
 private:
    
    void compileAndLink();
